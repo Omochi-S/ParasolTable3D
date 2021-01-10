@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ja" lang="ja">
+<style>
+  html{
+    text-align: center;
+  }
+</style>
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Language" content="ja" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Script-Type" content="text/javascript" />
+  <title>パラソルテーブル３D</title>
+
+  <script src="three.js"></script>
+  <script src="OrbitControls.js"></script>
+  <script type="text/javascript">
+    //<![CDATA[
+    var g; // グラフィックウィンドウ（固定）
+
+    function init() { // 初期化（固定）
+      const width = 960; // 3Dキャンバスの幅
+      const height = 540; // 3Dキャンバスの高さ
+
+      const renderer = new THREE.WebGLRenderer({ // レンダラー（投影計算）を作成
+        canvas: document.querySelector("#canvassample")
+      });
+      renderer.setPixelRatio(window.devicePixelRatio);
+      renderer.setSize(width, height);
+
+      const scene = new THREE.Scene(); // シーングラフのルートを生成
+      const camera = new THREE.PerspectiveCamera(45, width / height); // カメラを生成
+      camera.position.set(0, 0, +1.41); // カメラ（視点）の位置（1.41m）を設置
+      const controls = new THREE.OrbitControls(camera); // マウスによる回転制御
+      controls.enableDamping = true; // マウス制御の設定
+      controls.dampingFactor = 0.2; // マウス制御の設定
+
+      const directionalLight = new THREE.DirectionalLight(0xffffff); // 平行光源
+      directionalLight.position.set(1, 1, 1); // 光源の位置を設置（原点方向）
+      scene.add(directionalLight); // シーンに光源を追加
+      const ambientlight = new THREE.AmbientLight(0xffffff, 0.5); //環境光(色,強さ)
+      scene.add(ambientlight);
+
+      const groupObj = new THREE.Group(); // 部品をグループ化した複合物体
+      scene.add(groupObj);
+
+      const geometry = new THREE.CylinderGeometry(0.01, 0.01, 0.8, 32); //円柱・真ん中の軸
+      const material = new THREE.MeshStandardMaterial({
+        color: 0x8d5025,
+        roughness: 0.1
+      }); //色
+      const obj = new THREE.Mesh(geometry, material); // 部品１
+      groupObj.add(obj); // 部品１を複合物体に追加
+
+      const geometry2 = new THREE.ConeGeometry(0.4, 0.16, 8); //円錐・傘
+      const material2 = new THREE.MeshPhongMaterial({
+        color: 0xb94047
+      }); //色
+      const obj2 = new THREE.Mesh(geometry2, material2); // 部品２
+      groupObj.add(obj2); // 部品２を複合物体に追加
+      obj2.position.y = 0.32; // 部品２を上に配置(0.4-0.08)
+
+      const geometry3 = new THREE.CylinderGeometry(0.05, 0.05, 0.02, 32); //円柱・支えるところ
+      const material3 = new THREE.MeshStandardMaterial({
+        color: 0x4b2d16,
+        roughness: 0.1
+      }); //色
+      const obj3 = new THREE.Mesh(geometry3, material3); // 部品３
+      groupObj.add(obj3); // 部品３を複合物体に追加
+      obj3.position.y = -0.41; // 部品３を下に配置(-0.4-0.01)
+
+      const geometry4 = new THREE.CylinderGeometry(0.2, 0.2, 0.02, 32); //円柱・机
+      const material4 = new THREE.MeshStandardMaterial({
+        color: 0xbc7b3d,
+        roughness: 0.1
+      }); //色
+      const obj4 = new THREE.Mesh(geometry4, material4); // 部品４
+      groupObj.add(obj4); // 部品４を複合物体に追加
+      obj4.position.y = -0.1; // 部品４を下に配置
+
+      const geometry5 = new THREE.SphereGeometry(0.02, 32, 32); //球
+      const material5 = new THREE.MeshStandardMaterial({
+        color: 0xfdd23e
+      }); //色
+      const obj5 = new THREE.Mesh(geometry5, material5); // 部品５
+      groupObj.add(obj5); // 部品５を複合物体に追加
+      obj5.position.y = 0.41; // 部品５を上に配置(0.4+0.01)
+
+      function changeScene() { // シーン表示の更新処理メソッド
+        //obj.rotation.x += 0.01; // 物体を回転させる
+        //obj.rotation.y += 0.01; // 物体を回転させる   
+        controls.update(); // マウスによる回転制御を反映
+        renderer.render(scene, camera); // レンダリング
+        requestAnimationFrame(changeScene); // シーン表示を更新
+      }
+
+      changeScene(); // 初回シーン表示実行
+    }
+
+    window.onload = init; // 実行ウィンドウが開始したらinitを実施（固定）
+    //]]>
+
+  </script>
+</head>
+
+<body bgcolor="lightcyan">
+  <h1>パラソルテーブル３D</h1>
+  <canvas id="canvassample" width="960" height="540"></canvas>
+</body>
+
+</html>
